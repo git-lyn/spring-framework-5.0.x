@@ -19,6 +19,7 @@ public class MainDemo {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Appcofig.class);
 		context.refresh();
+
 		//AopService bean = context.getBean(AopService.class);
 //		MyFactoryBean bean = (MyFactoryBean)context.getBean("&myFactoryBean");
 //		IndexService bean1 = context.getBean(IndexService.class);
