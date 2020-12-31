@@ -87,6 +87,11 @@ public class InjectionMetadata {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Processing injected element of bean '" + beanName + "': " + element);
 				}
+				// 进行处理循环依赖： InjectedElement 注入元素
+				/**
+				 * 调用 AutowiredAnnotationBeanPostProcessor.AutowiredFieldElement
+				 *   的#inject()方法
+				 */
 				element.inject(target, beanName, pvs);
 			}
 		}

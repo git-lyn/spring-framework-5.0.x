@@ -158,7 +158,7 @@ public class AnnotationConfigUtils {
 		}
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
-		//BeanDefinitio的注册，这里很重要，需要理解注册每个bean的类型
+		//BeanDefinition的注册，这里很重要，需要理解注册每个bean的类型
 		// 第一个: Root bean: class [org.springframework.context.annotation.ConfigurationClassPostProcessor]
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//需要注意的是ConfigurationClassPostProcessor的类型是BeanDefinitionRegistryPostProcessor

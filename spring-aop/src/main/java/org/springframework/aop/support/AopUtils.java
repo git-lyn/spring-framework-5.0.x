@@ -225,7 +225,9 @@ public abstract class AopUtils {
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
-
+		/**
+		 * 获取方法匹配器
+		 */
 		MethodMatcher methodMatcher = pc.getMethodMatcher();
 		if (methodMatcher == MethodMatcher.TRUE) {
 			// No need to iterate the methods if we're matching any method anyway...
@@ -242,11 +244,19 @@ public abstract class AopUtils {
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
-
+		/**
+		 * 循环调用 class
+		 */
 		for (Class<?> clazz : classes) {
+			// 通过class获取所有的方法
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
+				// 循环匹配方法: introductionAwareMethodMatcher.matches();
 				if (introductionAwareMethodMatcher != null ?
+						/**
+						 * Spring事务使用的是：TransactionAttributeSourcePointcut#matches()
+						 * 从四个方面进行@Transactionl注解的查找
+						 */
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
 						methodMatcher.matches(method, targetClass)) {
 					return true;
@@ -266,6 +276,7 @@ public abstract class AopUtils {
 	 * @return whether the pointcut can apply on any method
 	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass) {
+		// canApply(): 能够使用的advisor通知
 		return canApply(advisor, targetClass, false);
 	}
 
@@ -285,6 +296,10 @@ public abstract class AopUtils {
 		}
 		else if (advisor instanceof PointcutAdvisor) {
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
+			/**
+			 *  InstantiationModelAwarePointcutAdvisorImpl implement PointcutAdvisor
+			 */
+			// canApply(): 能够使用的advisor通知
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
 		else {
@@ -304,9 +319,13 @@ public abstract class AopUtils {
 	public static List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> clazz) {
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
-		}
+		}// eligible: 可以使用的  candidate: 候补者
 		List<Advisor> eligibleAdvisors = new ArrayList<>();
+		// 循环所有的候补的增强器(Before after around)
 		for (Advisor candidate : candidateAdvisors) {
+			/**
+			 * canApply(): 能够使用的advisor通知
+			 */
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
@@ -317,6 +336,10 @@ public abstract class AopUtils {
 				// already processed
 				continue;
 			}
+			/**
+			 *  InstantiationModelAwarePointcutAdvisorImpl implement PointcutAdvisor
+			 */
+			// 判断是否为可以使用的： advisor PointcutAdvisor
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

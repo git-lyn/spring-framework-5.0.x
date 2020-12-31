@@ -20,7 +20,7 @@ import java.util.List;
  **/
 @Configuration
 //@ComponentScan("com.lyn")
-//@EnableWebMvc
+@EnableWebMvc
 public class Appconfig implements WebMvcConfigurer {
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {

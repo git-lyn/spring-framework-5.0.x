@@ -107,6 +107,10 @@ class BeanDefinitionValueResolver {
 		// to another bean to be resolved.
 		if (value instanceof RuntimeBeanReference) {
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
+			/**
+			 * 循环调用 AbstractBeanFactory getBean();
+			 *beanFactory.getBean(refName);
+			 */
 			return resolveReference(argName, ref);
 		}
 		else if (value instanceof RuntimeBeanNameReference) {
@@ -364,6 +368,12 @@ class BeanDefinitionValueResolver {
 				bean = this.beanFactory.getParentBeanFactory().getBean(refName);
 			}
 			else {
+				/**
+				 *
+				 * 循环调用：
+				 * AbstractBeanFactory#getBean(java.lang.String)
+				 *
+				 */
 				bean = this.beanFactory.getBean(refName);
 				this.beanFactory.registerDependentBean(refName, this.beanName);
 			}

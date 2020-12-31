@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.MethodClassKey;
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -87,6 +88,13 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	 * @return a TransactionAttribute for this method, or {@code null} if the method
 	 * is not transactional
 	 */
+	/**
+	 * 获取事务相关的数据
+	 * @param method the method to introspect
+	 * @param targetClass the target class (may be {@code null},
+	 * in which case the declaring class of the method must be used)
+	 * @return
+	 */
 	@Override
 	@Nullable
 	public TransactionAttribute getTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
@@ -108,6 +116,14 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 			}
 		}
 		else {
+			/**
+			 *
+			 * 计算事务属性： @Transactional 注解
+			 *  1、先从实现类的方法查找
+			 *  2、在从实现类查找
+			 *  3、接着从接口的方法查找
+			 *  4、最后从接口查找
+			 */
 			// We need to work it out.
 			TransactionAttribute txAttr = computeTransactionAttribute(method, targetClass);
 			// Put it in the cache.
@@ -115,13 +131,20 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 				this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE);
 			}
 			else {
+				/**
+				 * 将方法的全类名放入到描述中: 标志这个方法要被切的
+				 */
 				String methodIdentification = ClassUtils.getQualifiedMethodName(method, targetClass);
 				if (txAttr instanceof DefaultTransactionAttribute) {
+					// 将方法的全类名放入到描述中: 标志这个方法要被切的
 					((DefaultTransactionAttribute) txAttr).setDescriptor(methodIdentification);
 				}
 				if (logger.isDebugEnabled()) {
 					logger.debug("Adding transactional method '" + methodIdentification + "' with attribute: " + txAttr);
 				}
+				/**
+				 * 将其放进到对应的缓存中去
+				 */
 				this.attributeCache.put(cacheKey, txAttr);
 			}
 			return txAttr;
@@ -147,7 +170,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	 * @since 4.1.8
 	 * @see #getTransactionAttribute
 	 */
-	@Nullable
+	@Nullable // method: 接口的方法
 	protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
 		// Don't allow no-public methods as required.
 		if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
@@ -158,12 +181,14 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		// If the target class is null, the method will be unchanged.
 		Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
+		// 1、获取实现类的： 先从实现类的方法上去寻找
 		// First try is the method in the target class.
+		// 进入的类: AnnotationTransactionAttributeSource.findTransactionAttribute()
 		TransactionAttribute txAttr = findTransactionAttribute(specificMethod);
 		if (txAttr != null) {
 			return txAttr;
 		}
-
+		// 第二步: 从实现类上进行查找，是否有@Transactional 注解
 		// Second try is the transaction attribute on the target class.
 		txAttr = findTransactionAttribute(specificMethod.getDeclaringClass());
 		if (txAttr != null && ClassUtils.isUserLevelMethod(method)) {
@@ -171,11 +196,13 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		}
 
 		if (specificMethod != method) {
+			// 第三步: 从接口的方法进行查找，是否有@Transactional 注解
 			// Fallback is to look at the original method.
 			txAttr = findTransactionAttribute(method);
 			if (txAttr != null) {
 				return txAttr;
 			}
+			// 第四步: 从接口查找，是否有@Transactional 注解
 			// Last fallback is the class of the original method.
 			txAttr = findTransactionAttribute(method.getDeclaringClass());
 			if (txAttr != null && ClassUtils.isUserLevelMethod(method)) {

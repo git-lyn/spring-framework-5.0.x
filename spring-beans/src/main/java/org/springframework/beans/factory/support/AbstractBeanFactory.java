@@ -273,7 +273,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		 *
 		 *
 		 *
-		 *
+		 *getSingleton(beanName): 进行AOP的功能处理
 		 *
 		 * lazy
 		 */
@@ -296,6 +296,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			 * bean 实例。如果用户想获取 FactoryBean 本身，这里也不会做特别的处理，直接返回
 			 * 即可。毕竟 FactoryBean 的实现类本身也是一种 bean，只不过具有一点特殊的功能而已。
 			 */
+			// 如果是factoryBean就从缓存中取出来： factoryBeanObjectCache
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -1679,6 +1680,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		Object object = null;
 		if (mbd == null) {
+			// 从缓存 factoryBeanObjectCache  获取数据
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
@@ -1689,6 +1691,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+			// 会调用  applyBeanPostProcessorsAfterInitialization()
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;

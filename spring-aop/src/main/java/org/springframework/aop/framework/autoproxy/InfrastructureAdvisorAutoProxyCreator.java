@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0.7
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial")// Infrastructure  基础设施
 public class InfrastructureAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
 
 	@Nullable
@@ -40,6 +40,11 @@ public class InfrastructureAdvisorAutoProxyCreator extends AbstractAdvisorAutoPr
 		this.beanFactory = beanFactory;
 	}
 
+	/**
+	 * 通过对应的事务机制，才进行注入
+	 * @param beanName the name of the Advisor bean
+	 * @return
+	 */
 	@Override
 	protected boolean isEligibleAdvisorBean(String beanName) {
 		return (this.beanFactory != null && this.beanFactory.containsBeanDefinition(beanName) &&

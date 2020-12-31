@@ -101,7 +101,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 	protected final synchronized AopProxy createAopProxy() {
 		if (!this.active) {
 			activate();
-		}
+		}// 判断是jdk动态代理，还是cglib动态代理
 		return getAopProxyFactory().createAopProxy(this);
 	}
 

@@ -1231,6 +1231,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				/**
 				 * 通过自定义HandlerMapping,
 				 * 我们可以实现web服务器访问静态资源，以及非webapp目录下的资源
+				 * AbstractHandlerMapping#getHandler()
 				 */
 				HandlerExecutionChain handler = hm.getHandler(request);
 				if (handler != null) {

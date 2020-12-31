@@ -36,7 +36,7 @@ public class ProxyConfig implements Serializable {
 
 	private boolean proxyTargetClass = false;
 
-	private boolean optimize = false;
+	private boolean optimize = false; // 优化
 
 	boolean opaque = false;
 

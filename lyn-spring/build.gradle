@@ -16,13 +16,36 @@ repositories {
 dependencies {
     compile project(':spring-context')
 
+    compile project(':spring-tx')
+
     // https://mvnrepository.com/artifact/org.mybatis/mybatis
-    compile group: 'org.mybatis', name: 'mybatis', version: '3.5.5'
+//    compile group: 'org.mybatis', name: 'mybatis', version: '3.5.5'
+
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '2.0.2'
 
 
     // https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
     compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.5'
 
+    // https://mvnrepository.com/artifact/org.springframework/spring-jdbc
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '5.3.1'
+
+    // https://mvnrepository.com/artifact/com.alibaba/druid
+//    compile group: 'com.alibaba', name: 'druid', version: '1.1.22'
+
+    // https://mvnrepository.com/artifact/com.alibaba/druid
+    compile group: 'com.alibaba', name: 'druid', version: '1.2.3'
+
+
+
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.48'
+
+
+
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '2.0.3'
 
     // https://mvnrepository.com/artifact/org.pantsbuild/jarjar
 //    compile group: 'org.pantsbuild', name: 'jarjar', version: '1.7.2'

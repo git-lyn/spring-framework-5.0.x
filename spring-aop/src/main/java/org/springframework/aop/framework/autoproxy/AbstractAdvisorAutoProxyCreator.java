@@ -64,6 +64,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	}
 
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// Retrieval: 检索、拯救、恢复
 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
 	}
 
@@ -73,6 +74,10 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	protected Object[] getAdvicesAndAdvisorsForBean(
 			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
 
+		/**
+		 * 找到合适的通知  Advisor: 顾问
+		 * Eligible: 合适的
+		 */
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
@@ -91,7 +96,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
-		List<Advisor> candidateAdvisors = findCandidateAdvisors();
+		// 找事务相关的，找不到在进行找 通知
+		// 找到候补者的 通知
+		// 第二次查找，可以找到因为已经放到缓存中了(resolveBeforeInstantiation() )
+		List<Advisor> candidateAdvisors = findCandidateAdvisors(); // candidate 候补者
+		// 找到本类可以使用的advisor
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
@@ -105,7 +114,24 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
+		// candidate: 候补者， advisor: 顾问
 		Assert.state(this.advisorRetrievalHelper != null, "No BeanFactoryAdvisorRetrievalHelper available");
+		// 这是一个 advisorRetrievalHelper 增强查找工具类
+		// advisorRetrievalHelper： 是在
+		// BeanFactoryAware.setBeanFactory() 设置的 advisorRetrievalHelper
+
+		/**
+		 *
+		 * AbstractAdvisorAutoProxyCreator#initBeanFactory()
+		 *      advisorRetrievalHelper
+		 *  	this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
+		 *  	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		 * 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
+		 *        }
+		 *
+		 */
+		// 调用当前类的initBeanFactory()注入了 advisorRetrievalHelper
+		// 寻找事务切面的  Retrieval： 检索、拯救
 		return this.advisorRetrievalHelper.findAdvisorBeans();
 	}
 
@@ -123,6 +149,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
+			/**
+			 * 获取所有可以使用的advisor 通知信息
+			 */
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

@@ -547,9 +547,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
-				//初始化应用事件广播器
+				//初始化应用事件广播器, 事件多波器
 				initApplicationEventMulticaster();
 
+				/**
+				 *  SpringBoot通过onRefresh()方法，实现启动的
+				 */
 				// Initialize other special beans in specific context subclasses.
 				onRefresh();
 
@@ -559,6 +562,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Instantiate all remaining (non-lazy-init) singletons.
 				finishBeanFactoryInitialization(beanFactory);
 
+				/**
+				 * Eureka通过 finishRefresh()，实现启动的
+				 *  通过SmartLifeCycle
+				 */
 				// Last step: publish corresponding event.
 				finishRefresh();
 			}
@@ -658,6 +665,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		//添加一个后置管理器
 		//ApplicationContextAwareProcessor
 		// 能够在bean中获得到各种*Aware（*Aware都有其作用）
+		// 注入一个后置处理器
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
@@ -675,6 +683,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
+		// 注入一个后置处理器
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.

@@ -32,13 +32,28 @@ import org.springframework.util.ObjectUtils;
  */
 @SuppressWarnings("serial")
 abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPointcut implements Serializable {
-
+	/**
+	 * Spring事务处理会调用该方法进行拦击
+	 * @param method the candidate method
+	 * @param targetClass the target class (may be {@code null}, in which case
+	 * the candidate class must be taken to be the method's declaring class)
+	 * @return
+	 */
 	@Override
 	public boolean matches(Method method, @Nullable Class<?> targetClass) {
 		if (targetClass != null && TransactionalProxy.class.isAssignableFrom(targetClass)) {
 			return false;
 		}
+		/**
+		 * 事务属性源: AnnotationTransactionAttributeSource
+		 *  @EnableTransactionManagement  TransactionManagementConfigurationSelector
+		 * 通过 ProxyTransactionManagementConfiguration 注入到Spring容器
+		 */
 		TransactionAttributeSource tas = getTransactionAttributeSource();
+		// tas对象为: AbstractFallbackTransactionAttributeSource. getTransactionAttribute()
+		/**
+		 * 从四个方面进行@Transactionl注解的查找
+		 */
 		return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
 	}
 

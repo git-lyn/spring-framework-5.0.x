@@ -278,22 +278,38 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	protected Object invokeWithinTransaction(Method method, @Nullable Class<?> targetClass,
 			final InvocationCallback invocation) throws Throwable {
 
+		// AnnotationTransactionAttributeSource: 注入的
 		// If the transaction attribute is null, the method is non-transactional.
 		TransactionAttributeSource tas = getTransactionAttributeSource();
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
+		// 获取事务平台管理： this.beanFactory.getBean(PlatformTransactionManager.class)
 		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
+		// Identification: 鉴定 需要切 哪一个方法: 方法是否存在@Transactional 注解
+		/**
+		 * ******* 四种方式
+		 *
+		 *
+		 */
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
 		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
+			/**
+			 * 标准的模式
+			 *  开启事务，关闭自动提交
+			 */
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);
 			Object retVal = null;
 			try {
+				/**
+				 * 执行目标方法
+				 */
 				// This is an around advice: Invoke the next interceptor in the chain.
 				// This will normally result in a target object being invoked.
 				retVal = invocation.proceedWithInvocation();
 			}
 			catch (Throwable ex) {
+				// 进行事务的回滚
 				// target invocation exception
 				completeTransactionAfterThrowing(txInfo, ex);
 				throw ex;
@@ -301,6 +317,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			finally {
 				cleanupTransactionInfo(txInfo);
 			}
+			// 进行提交事务的
 			commitTransactionAfterReturning(txInfo);
 			return retVal;
 		}
@@ -471,6 +488,11 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		TransactionStatus status = null;
 		if (txAttr != null) {
 			if (tm != null) {
+				/**
+				 *
+				 * ***** 获取事务状态
+				 */
+				// AbstractPlatformTransactionManager.getTransaction
 				status = tm.getTransaction(txAttr);
 			}
 			else {

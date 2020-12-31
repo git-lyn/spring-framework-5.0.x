@@ -80,7 +80,12 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
+	/**
+	 * 从类工厂中获取对应的切面: Aspect 注解的类
+	 * @return
+	 */
 	public List<Advisor> buildAspectJAdvisors() {
+		// 判断是否解析了，默认为null
 		List<String> aspectNames = this.aspectBeanNames;
 
 		if (aspectNames == null) {
@@ -89,6 +94,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				if (aspectNames == null) {
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
+					/**
+					 * 从bean工厂中获取所用的类 bd
+					 */
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 					for (String beanName : beanNames) {
@@ -101,14 +109,23 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						if (beanType == null) {
 							continue;
 						}
+						// 判断当前的类是否为aspect切面类型： 是否有 Aspect.class 注解
 						if (this.advisorFactory.isAspect(beanType)) {
 							aspectNames.add(beanName);
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								/**
+								 * 获取对应的增强器：！！！！！
+								 */// advisor: 顾问
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
+									/**
+									 * 将对应的增强器放到对应的缓存中
+									 * 所谓的增强器： 就是将对应的方法转换成对象
+									 * advisor： 顾问
+									 */
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
 								else {
@@ -140,6 +157,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		}
 		List<Advisor> advisors = new ArrayList<>();
 		for (String aspectName : aspectNames) {
+			/**
+			 * 从缓存中取出对应的增强器
+			 */
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
 			if (cachedAdvisors != null) {
 				advisors.addAll(cachedAdvisors);
@@ -156,7 +176,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * Return whether the aspect bean with the given name is eligible.
 	 * @param beanName the name of the aspect bean
 	 * @return whether the bean is eligible
-	 */
+	 */// Eligible: 合格的
 	protected boolean isEligibleBean(String beanName) {
 		return true;
 	}

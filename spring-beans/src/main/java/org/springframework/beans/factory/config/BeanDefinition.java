@@ -226,6 +226,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	ConstructorArgumentValues getConstructorArgumentValues();
 
 	/**
+	 *
+	 * 判断构造器是否有参数传递
 	 * Return if there are constructor argument values defined for this bean.
 	 * @since 5.0.2
 	 */
@@ -234,6 +236,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	}
 
 	/**
+	 * 用于存储类的 属性
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the MutablePropertyValues object (never {@code null})

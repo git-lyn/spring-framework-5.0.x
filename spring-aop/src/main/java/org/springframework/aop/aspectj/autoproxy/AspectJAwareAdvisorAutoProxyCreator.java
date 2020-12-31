@@ -97,6 +97,12 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 
 	@Override
 	protected boolean shouldSkip(Class<?> beanClass, String beanName) {
+		/**
+		 * 找到候补的增强器或者切面
+		 *  实际查找的 是事务的增强器，默认的返回的为空,如何不为空就是开启了事务机制
+		 *  AnnotationAwareAspectJAutoProxyCreator#findCandidateAdvisors()
+		 *  Advisor：顾问
+		 */
 		// TODO: Consider optimization by caching the list of the aspect names
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		for (Advisor advisor : candidateAdvisors) {

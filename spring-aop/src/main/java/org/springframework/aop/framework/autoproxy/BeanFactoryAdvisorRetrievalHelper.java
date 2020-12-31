@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @since 2.0.2
  * @see AbstractAdvisorAutoProxyCreator
- */
+ */ // Retrieval: 检索
 public class BeanFactoryAdvisorRetrievalHelper {
 
 	private static final Log logger = LogFactory.getLog(BeanFactoryAdvisorRetrievalHelper.class);
@@ -65,9 +65,18 @@ public class BeanFactoryAdvisorRetrievalHelper {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> findAdvisorBeans() {
+		/**
+		 * 先从缓存中查找，是否存在对应的增强器
+		 */
 		// Determine list of advisor bean names, if not cached already.
 		String[] advisorNames = this.cachedAdvisorBeanNames;
 		if (advisorNames == null) {
+
+			/**
+			 * 从容器中找到所有的实现 Advisor 的实现类
+			 * 实现 Advisor 的类  是用来查找事务切面的
+			 */
+
 			// Do not initialize FactoryBeans here: We need to leave all regular beans
 			// uninitialized to let the auto-proxy creator apply to them!
 			advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
@@ -80,6 +89,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 
 		List<Advisor> advisors = new ArrayList<>();
 		for (String name : advisorNames) {
+			// Eligible: 合格的
 			if (isEligibleBean(name)) {
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isDebugEnabled()) {

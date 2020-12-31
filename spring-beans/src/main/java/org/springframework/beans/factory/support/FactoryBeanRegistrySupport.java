@@ -113,6 +113,9 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 							}
 							beforeSingletonCreation(beanName);
 							try {
+								// 调用后置处理:AbstractAutowireCapableBeanFactory.postProcessObjectFromFactoryBean
+								//  applyBeanPostProcessorsAfterInitialization
+								// 最后会调用 BeanPostProcessor的 postProcessorAfterInitialization
 								object = postProcessObjectFromFactoryBean(object, beanName);
 							}
 							catch (Throwable ex) {

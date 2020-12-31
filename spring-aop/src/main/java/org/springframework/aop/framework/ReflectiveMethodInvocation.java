@@ -180,6 +180,21 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			}
 		}
 		else {
+
+			/**
+			 * 使用事务拦截器:
+			 * TransactionInterceptor#invoke()
+			 *
+			 *  多种通知类型:
+			 *  返回通知：AfterReturningAdviceInterceptor#invoke()
+			 *  后置通知(每次都执行，finally): AspectJAfterAdvice#invoke()
+			 *  异常通知: AspectJAfterThrowingAdvice#invoke()
+			 *  前置通知:MethodBeforeAdviceInterceptor#invoke()
+			 *  前置通知执行完后，在执行目标方法的执行逻辑:  invokeJoinpoint()				 *
+			 *
+			 *
+			 */
+
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
